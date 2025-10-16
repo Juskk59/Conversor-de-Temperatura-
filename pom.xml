@@ -1,0 +1,222 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>dev.murilormoraes</groupId>
+  <artifactId>mavenproject</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>${project.artifactId}</name>
+  
+  <properties>
+      <skipTests>true</skipTests>
+   
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+      <!-- Requisitos: Jakarta NoSQL -->
+      <weld-se-shaded.version>6.0.3.Final</weld-se-shaded.version>
+      <yasson.version>3.0.4</yasson.version>
+      <parsson.version>1.1.7</parsson.version>
+      <smallrye-config-core.version>3.14.0</smallrye-config-core.version>
+      <microprofile-config-api.version>3.1</microprofile-config-api.version>
+      <!-- Eclipse JNoSQL -->
+<!--
+      <jnosql-mapping-document.version>1.1.10</jnosql-mapping-document.version>
+      <artemis-document.version>1.0.0-b2</artemis-document.version>
+-->
+      <jnosql-mongodb.version>1.1.10</jnosql-mongodb.version>
+
+      <junit-bom.version>5.13.4</junit-bom.version>
+
+      <maven-shade-plugin.version>3.6.1</maven-shade-plugin.version>
+      <exec-maven-plugin.version>3.5.1</exec-maven-plugin.version>
+
+      <!-- build > pluginManagement > plugins -->
+      <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+      <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+      <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+
+      <maven-compiler-plugin.source>17</maven-compiler-plugin.source>
+      <maven-compiler-plugin.target>17</maven-compiler-plugin.target>
+
+      <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+      <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
+      <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+      <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+      <maven-site-plugin.version>3.21.0</maven-site-plugin.version>
+      <maven-project-info-reports-plugin.version>
+         3.9.0
+      </maven-project-info-reports-plugin.version>
+   </properties>
+
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+            <version>${junit-bom.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+
+   <dependencies>
+      <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+      <!-- ### Requisitos: Jakarta JNoSQL ################################## -->
+      <!-- Jakarta Contexts & Dependency Injection -->
+      <!-- https://mvnrepository.com/artifact/org.jboss.weld.se/weld-se-shaded -->
+      <dependency>
+         <groupId>org.jboss.weld.se</groupId>
+         <artifactId>weld-se-shaded</artifactId>
+         <version>${weld-se-shaded.version}</version>
+      </dependency>
+      <!-- Jakarta JSON Binding -->
+      <!-- https://mvnrepository.com/artifact/org.eclipse/yasson -->
+      <dependency>
+         <groupId>org.eclipse</groupId>
+         <artifactId>yasson</artifactId>
+         <version>${yasson.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <!-- Jakarta JSON Processing -->
+      <!-- https://mvnrepository.com/artifact/org.eclipse.parsson/parsson -->
+      <dependency>
+         <groupId>org.eclipse.parsson</groupId>
+         <artifactId>parsson</artifactId>
+         <version>${parsson.version}</version>
+      </dependency>
+      <!-- MicroProfile Config -->
+      <!-- https://mvnrepository.com/artifact/io.smallrye.config/smallrye-config-core -->
+      <dependency>
+         <groupId>io.smallrye.config</groupId>
+         <artifactId>smallrye-config-core</artifactId>
+         <version>${smallrye-config-core.version}</version>
+      </dependency>
+      <!-- https://mvnrepository.com/artifact/org.eclipse.microprofile.config/microprofile-config-api -->
+      <dependency>
+         <groupId>org.eclipse.microprofile.config</groupId>
+         <artifactId>microprofile-config-api</artifactId>
+         <version>${microprofile-config-api.version}</version>
+      </dependency>
+
+      <!-- ################################################################# -->
+      <!-- @@@ Eclipse JNoSQL @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
+      <!-- MongoDB -->
+      <!-- https://mvnrepository.com/artifact/org.eclipse.jnosql.databases/jnosql-mongodb -->
+      <dependency>
+         <groupId>org.eclipse.jnosql.databases</groupId>
+         <artifactId>jnosql-mongodb</artifactId>
+         <version>${jnosql-mongodb.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-engine</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-api</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <!-- Optionally: parameterized tests support -->
+      <dependency>
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-params</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.data</groupId>
+        <artifactId>jakarta.data-api</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <finalName>${project.artifactId}</finalName>
+
+      <plugins>
+         <plugin>
+            <!--
+            PARA EXECUTAR A APLICAÇÃO QUANDO HÁ BIBLIOTECAS EXTERNAS
+            -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-shade-plugin -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-shade-plugin</artifactId>
+            <version>${maven-shade-plugin.version}</version>
+            <executions>
+               <execution>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>shade</goal>
+                  </goals>
+                  <configuration>
+                     <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                        <mainClass>
+                        br.edu.ifpr.jnosql_mongo.main.JNoSqlMongo03Main
+                        </mainClass>
+                        </transformer>
+                     </transformers>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+
+      <pluginManagement>
+      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+         <plugins>
+            <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+            <plugin>
+               <artifactId>maven-clean-plugin</artifactId>
+               <version>${maven-clean-plugin.version}</version>
+            </plugin>
+            <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+            <plugin>
+               <artifactId>maven-resources-plugin</artifactId>
+               <version>${maven-resources-plugin.version}</version>
+            </plugin>
+            <plugin>
+               <artifactId>maven-compiler-plugin</artifactId>
+               <version>${maven-compiler-plugin.version}</version>
+               <configuration>
+                  <source>${maven-compiler-plugin.source}</source>
+                  <target>${maven-compiler-plugin.target}</target>
+               </configuration>
+            </plugin>
+            <plugin>
+               <artifactId>maven-surefire-plugin</artifactId>
+               <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+            <plugin>
+               <artifactId>maven-jar-plugin</artifactId>
+               <version>${maven-jar-plugin.version}</version>
+            </plugin>
+            <plugin>
+               <artifactId>maven-install-plugin</artifactId>
+               <version>${maven-install-plugin.version}</version>
+            </plugin>
+            <plugin>
+               <artifactId>maven-deploy-plugin</artifactId>
+               <version>${maven-deploy-plugin.version}</version>
+            </plugin>
+            <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+            <plugin>
+               <artifactId>maven-site-plugin</artifactId>
+               <version>${maven-site-plugin.version}</version>
+            </plugin>
+            <plugin>
+               <artifactId>maven-project-info-reports-plugin</artifactId>
+               <version>${maven-project-info-reports-plugin.version}</version>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
+</project>

@@ -1,0 +1,421 @@
+# 🚀 GUIA RÁPIDO - DEPLOY NO TOMCAT (WINDOWS 11)
+
+## ⚡ RESUMO EXECUTIVO
+
+### Passo 1: Preparar Ambiente
+1. Instalar Java JDK 17+
+2. Instalar Apache Tomcat 10.1
+3. Instalar Docker Desktop (para MongoDB)
+4. Ter Maven instalado
+
+### Passo 2: Verificar Ambiente
+Execute: `verificar-ambiente.bat`
+- Verifica se tudo está instalado corretamente
+
+### Passo 3: Deploy Automatizado
+Execute: `deploy.bat` (COMO ADMINISTRADOR)
+- Compila o projeto
+- Para o Tomcat
+- Remove versão anterior
+- Copia o novo WAR
+- Inicia o Tomcat
+
+### Passo 4: Testar
+Acesse: http://localhost:8080/mavenproject/api/temperatures
+
+---
+
+## 📝 INSTRUÇÕES DETALHADAS
+
+### 1. INSTALAR TOMCAT
+
+**Download:**
+https://tomcat.apache.org/download-10.cgi
+→ Baixe: "32-bit/64-bit Windows Service Installer"
+
+**Instalação:**
+1. Execute o instalador .exe
+2. Porta: 8080 (padrão)
+3. Username: admin
+4. Password: admin
+5. Instalar em: C:\Program Files\Apache Software Foundation\Tomcat 10.1
+6. Marcar "Run Apache Tomcat"
+7. Finish
+
+**Configurar Usuário Admin:**
+Edite: C:\Program Files\Apache Software Foundation\Tomcat 10.1\conf\tomcat-users.xml
+
+Adicione antes de </tomcat-users>:
+```xml
+<role rolename="manager-gui"/>
+<role rolename="manager-script"/>
+<role rolename="admin-gui"/>
+<user username="admin" password="admin" roles="manager-gui,manager-script,admin-gui"/>
+```
+
+Salve e reinicie o Tomcat.
+
+---
+
+### 2. INICIAR MONGODB
+
+**Com Docker (Recomendado):**
+```powershell
+docker run -d --name mongodb -p 27017:27017 mongo:latest
+docker ps
+```
+
+**Verificar:**
+```powershell
+docker exec -it mongodb mongosh
+show dbs
+exit
+```
+
+---
+
+### 3. COMPILAR PROJETO
+
+```powershell
+cd C:\Users\muril\eclipse-workspace\mavenproject
+mvn clean package
+```
+
+**Verificar WAR gerado:**
+```powershell
+dir target\mavenproject.war
+```
+
+---
+
+### 4. DEPLOY NO TOMCAT
+
+**Método 1 - Via Web Manager (FÁCIL):**
+
+1. Acesse: http://localhost:8080/manager/html
+2. Login: admin / admin
+3. Seção "WAR file to deploy"
+4. Escolher arquivo: C:\Users\muril\eclipse-workspace\mavenproject\target\mavenproject.war
+5. Clique "Deploy"
+6. Aguarde aparecer "/mavenproject" na lista com status "Running"
+
+**Método 2 - Cópia Manual:**
+```powershell
+copy C:\Users\muril\eclipse-workspace\mavenproject\target\mavenproject.war "C:\Program Files\Apache Software Foundation\Tomcat 10.1\webapps\"
+```
+
+O Tomcat detecta e faz deploy automaticamente em ~10 segundos.
+
+**Método 3 - Script Automatizado:**
+```powershell
+# Execute COMO ADMINISTRADOR
+cd C:\Users\muril\eclipse-workspace\mavenproject
+.\deploy.bat
+```
+
+---
+
+### 5. VERIFICAR DEPLOY
+
+**Manager Web:**
+http://localhost:8080/manager/html
+→ Procure "/mavenproject" com status "Running"
+
+**Testar API:**
+```powershell
+curl http://localhost:8080/mavenproject/api/temperatures
+```
+
+**Resposta esperada:**
+```json
+[]
+```
+
+---
+
+### 6. TESTAR FUNCIONALIDADES
+
+**Criar Temperatura:**
+```powershell
+curl -X POST http://localhost:8080/mavenproject/api/temperatures -H "Content-Type: application/json" -d "{\"inputValue\": 0, \"inputType\": \"C\", \"outputType\": \"F\"}"
+```
+
+**Resposta esperada:**
+```json
+{
+  "timestamp": 1729098765432,
+  "dateTime": "2025-10-16T14:32:45",
+  "inputValue": 0.0,
+  "inputType": "C",
+  "outputType": "F",
+  "outputValue": 32.0
+}
+```
+
+**Listar Todas:**
+```powershell
+curl http://localhost:8080/mavenproject/api/temperatures
+```
+
+---
+
+## 🔧 COMANDOS ÚTEIS
+
+### Gerenciar Tomcat
+
+**Iniciar:**
+```powershell
+cd "C:\Program Files\Apache Software Foundation\Tomcat 10.1\bin"
+.\startup.bat
+```
+
+**Parar:**
+```powershell
+cd "C:\Program Files\Apache Software Foundation\Tomcat 10.1\bin"
+.\shutdown.bat
+```
+
+**Ver Logs:**
+```powershell
+type "C:\Program Files\Apache Software Foundation\Tomcat 10.1\logs\catalina.out"
+```
+
+**Logs em Tempo Real:**
+```powershell
+Get-Content "C:\Program Files\Apache Software Foundation\Tomcat 10.1\logs\catalina.out" -Wait -Tail 50
+```
+
+### Gerenciar MongoDB
+
+**Iniciar:**
+```powershell
+docker start mongodb
+```
+
+**Parar:**
+```powershell
+docker stop mongodb
+```
+
+**Ver Dados:**
+```powershell
+docker exec -it mongodb mongosh
+use mavenproject
+db.Temperature.find().pretty()
+```
+
+### Recompilar e Redeploy
+
+**Rápido:**
+```powershell
+cd C:\Users\muril\eclipse-workspace\mavenproject
+mvn clean package -DskipTests
+copy target\mavenproject.war "C:\Program Files\Apache Software Foundation\Tomcat 10.1\webapps\"
+```
+
+**Completo (com script):**
+```powershell
+.\deploy.bat
+```
+
+---
+
+## 🐛 PROBLEMAS COMUNS
+
+### Problema: "404 Not Found"
+
+**Solução 1:** Verificar contexto correto
+```powershell
+# Tente diferentes URLs
+curl http://localhost:8080/mavenproject/api/temperatures
+curl http://localhost:8080/api/temperatures
+```
+
+**Solução 2:** Verificar no Manager
+- Acesse: http://localhost:8080/manager/html
+- Veja o path exato da aplicação
+
+### Problema: MongoDB não conecta
+
+**Solução:**
+```powershell
+# Verificar se está rodando
+docker ps
+
+# Iniciar se parado
+docker start mongodb
+
+# Ver logs
+docker logs mongodb
+```
+
+### Problema: Porta 8080 ocupada
+
+**Solução:**
+```powershell
+# Ver o que está usando
+netstat -ano | findstr :8080
+
+# Matar processo (substitua PID)
+taskkill /PID [número] /F
+
+# Ou mudar porta do Tomcat
+# Edite: C:\Program Files\...\Tomcat 10.1\conf\server.xml
+# Linha: <Connector port="8080" → Mude para 8081
+```
+
+### Problema: Erro de permissão ao copiar WAR
+
+**Solução:**
+```powershell
+# Execute PowerShell ou CMD como Administrador
+# Botão direito → "Executar como Administrador"
+```
+
+### Problema: Tomcat não inicia
+
+**Solução 1:** Verificar JAVA_HOME
+```powershell
+echo %JAVA_HOME%
+# Se vazio, configure:
+setx JAVA_HOME "C:\Program Files\Java\jdk-17"
+```
+
+**Solução 2:** Ver logs de erro
+```powershell
+type "C:\Program Files\Apache Software Foundation\Tomcat 10.1\logs\catalina.out"
+```
+
+### Problema: API retorna 500
+
+**Solução:** Ver logs da aplicação
+```powershell
+type "C:\Program Files\Apache Software Foundation\Tomcat 10.1\logs\localhost.*.log"
+```
+
+Geralmente é erro de conexão com MongoDB.
+
+---
+
+## ✅ CHECKLIST DE DEPLOY
+
+Antes de testar, verifique:
+
+- [ ] Java JDK 17+ instalado
+- [ ] Maven instalado e no PATH
+- [ ] Tomcat instalado em C:\Program Files\Apache Software Foundation\Tomcat 10.1
+- [ ] Usuário admin configurado em tomcat-users.xml
+- [ ] Docker Desktop instalado e rodando
+- [ ] MongoDB container criado e rodando (porta 27017)
+- [ ] Projeto compilado sem erros (mvn clean package)
+- [ ] Arquivo WAR gerado em target\mavenproject.war
+- [ ] WAR copiado para Tomcat\webapps
+- [ ] Tomcat iniciado
+- [ ] Aplicação aparece como "Running" no Manager
+- [ ] API responde em /mavenproject/api/temperatures
+
+---
+
+## 📊 URLS IMPORTANTES
+
+| Serviço | URL |
+|---------|-----|
+| Tomcat Home | http://localhost:8080 |
+| Tomcat Manager | http://localhost:8080/manager/html |
+| Server Status | http://localhost:8080/manager/status |
+| Sua API | http://localhost:8080/mavenproject/api/temperatures |
+| MongoDB | mongodb://localhost:27017 |
+
+**Credenciais Manager:**
+- Username: admin
+- Password: admin
+
+---
+
+## 🎯 TESTE FINAL
+
+Execute este script completo:
+
+```powershell
+# 1. MongoDB rodando?
+docker ps | findstr mongodb
+
+# 2. Tomcat rodando?
+curl http://localhost:8080
+
+# 3. Aplicação deployada?
+curl -u admin:admin http://localhost:8080/manager/text/list | findstr mavenproject
+
+# 4. API responde?
+curl http://localhost:8080/mavenproject/api/temperatures
+
+# 5. Criar temperatura
+curl -X POST http://localhost:8080/mavenproject/api/temperatures -H "Content-Type: application/json" -d "{\"inputValue\": 100, \"inputType\": \"C\", \"outputType\": \"F\"}"
+
+# 6. Listar (deve ter 1 registro)
+curl http://localhost:8080/mavenproject/api/temperatures
+```
+
+**Todos funcionando? Deploy bem-sucedido! ✅**
+
+---
+
+## 🚀 PRÓXIMOS PASSOS
+
+Agora que está deployado:
+
+1. Execute o Guia de Testes completo (test-guide.md)
+2. Valide todas as conversões de temperatura
+3. Teste todos os endpoints (POST, PUT, DELETE, GET)
+4. Verifique dados persistindo no MongoDB
+5. Documente possíveis problemas encontrados
+
+---
+
+## 📞 SCRIPTS AUXILIARES CRIADOS
+
+Foram criados 2 scripts na pasta do projeto:
+
+1. **verificar-ambiente.bat**
+   - Verifica se tudo está instalado
+   - Execute antes do deploy
+
+2. **deploy.bat**
+   - Deploy automatizado completo
+   - Execute COMO ADMINISTRADOR
+   - Faz tudo: compila, para Tomcat, copia WAR, inicia
+
+**Como usar:**
+```powershell
+# 1. Verificar ambiente
+.\verificar-ambiente.bat
+
+# 2. Deploy (como Admin)
+.\deploy.bat
+```
+
+---
+
+## 🎓 RESUMO FINAL
+
+**Para fazer deploy:**
+
+1. Instale: Java, Maven, Tomcat, Docker
+2. Configure: tomcat-users.xml
+3. Inicie: MongoDB (Docker)
+4. Execute: `deploy.bat` (como Admin)
+5. Acesse: http://localhost:8080/manager/html
+6. Teste: http://localhost:8080/mavenproject/api/temperatures
+
+**Pronto! 🎉**
+
+---
+
+## 📚 DOCUMENTAÇÃO ADICIONAL
+
+- Guia de Testes: test-guide.md (artifact)
+- Documentação da API: api-documentation.md (artifact)
+- Resumo de Correções: summary-corrections.md (artifact)
+- Deploy Completo: tomcat-deploy-guide.md (artifact)
+
+**Sucesso no deploy! 🚀**
