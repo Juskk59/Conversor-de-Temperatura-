@@ -2,11 +2,11 @@
 
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>dev.murilormoraes</groupId>
+  <groupId>com.example</groupId>
   <artifactId>mavenproject</artifactId>
   <packaging>war</packaging>
   <version>0.0.1-SNAPSHOT</version>
-  <name>${project.artifactId}</name>
+  <name>TemperatureConverterService</name>
   
   <properties>
       <skipTests>true</skipTests>
@@ -36,8 +36,8 @@
       <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
       <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
 
-      <maven-compiler-plugin.source>17</maven-compiler-plugin.source>
-      <maven-compiler-plugin.target>17</maven-compiler-plugin.target>
+      <maven-compiler-plugin.source>11</maven-compiler-plugin.source>
+      <maven-compiler-plugin.target>11</maven-compiler-plugin.target>
 
       <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
       <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
@@ -51,6 +51,36 @@
 
    <dependencyManagement>
       <dependencies>
+<dependency>
+    <groupId>org.glassfish.jersey.core</groupId>
+    <artifactId>jersey-server</artifactId>
+    <version>3.1.3</version>
+</dependency>
+<dependency>
+    <groupId>org.glassfish.jersey.inject</groupId>
+    <artifactId>jersey-hk2</artifactId>
+    <version>3.1.3</version>
+</dependency>
+<dependency>
+    <groupId>org.glassfish.jersey.media</groupId>
+    <artifactId>jersey-media-json-binding</artifactId>
+    <version>3.1.3</version>
+</dependency>
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.data</groupId>
+        <artifactId>jakarta.data-api</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
+    <groupId>org.glassfish.jersey.containers</groupId>
+    <artifactId>jersey-container-servlet</artifactId>
+      <version>3.1.3</version>
+</dependency>
          <dependency>
             <groupId>org.junit</groupId>
             <artifactId>junit-bom</artifactId>
@@ -62,6 +92,45 @@
    </dependencyManagement>
 
    <dependencies>
+<dependency>
+    <groupId>org.glassfish.jersey.core</groupId>
+    <artifactId>jersey-server</artifactId>
+    <version>3.1.3</version>
+</dependency>
+<dependency>
+    <groupId>org.glassfish.jersey.inject</groupId>
+    <artifactId>jersey-hk2</artifactId>
+    <version>3.1.3</version>
+</dependency>
+<dependency>
+    <groupId>org.glassfish.jersey.media</groupId>
+    <artifactId>jersey-media-json-binding</artifactId>
+    <version>3.1.3</version>
+</dependency>
+      <dependency>
+        <groupId>jakarta.ws.rs</groupId>
+        <artifactId>jakarta.ws.rs-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.data</groupId>
+        <artifactId>jakarta.data-api</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
+    <groupId>org.glassfish.jersey.containers</groupId>
+    <artifactId>jersey-container-servlet</artifactId>
+      <version>3.1.3</version>
+</dependency>
+   	   <dependency>
+			<dependency>
+			<dependency>
+			    <groupId>org.glassfish.jersey.media</groupId>
+			    <artifactId>jersey-media-json-jackson</artifactId>
+			    <version>2.35</version>
+			</dependency>
+			<dependency>
+			    <groupId>javax.servlet</groupId>
       <!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
       <!-- ### Requisitos: Jakarta JNoSQL ################################## -->
       <!-- Jakarta Contexts & Dependency Injection -->
@@ -126,16 +195,10 @@
          <artifactId>junit-jupiter-params</artifactId>
          <scope>test</scope>
       </dependency>
-      <dependency>
-        <groupId>jakarta.ws.rs</groupId>
-        <artifactId>jakarta.ws.rs-api</artifactId>
-        <version>3.1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.data</groupId>
-        <artifactId>jakarta.data-api</artifactId>
-        <version>1.0.1</version>
-      </dependency>
+	      <dependency>
+	        <groupId>javax.ws.rs</groupId>
+
+
    </dependencies>
 
    <build>
